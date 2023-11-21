@@ -103,25 +103,25 @@ public struct RealmChangeset {
 
 public extension ObservableType where Element: NotificationEmitter {
   @available(*, deprecated, renamed: "collection(from:synchronousStart:)")
-  static func from(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> Observable<Element> {
+  static func from(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> RxObservable<Element> {
     return self.collection(from: collection)
   }
 
   /**
-   Returns an `Observable<Element>` that emits each time the collection data changes.
+   Returns an `RxObservable<Element>` that emits each time the collection data changes.
    The observable emits an initial value upon subscription.
 
    - parameter from: A Realm collection of type `Element`: either `Results`, `List`, `LinkingObjects` or `AnyRealmCollection`.
-   - parameter synchronousStart: whether the resulting `Observable` should emit its first element synchronously (e.g. better for UI bindings)
+   - parameter synchronousStart: whether the resulting `RxObservable` should emit its first element synchronously (e.g. better for UI bindings)
    - parameter keyPaths: Only properties contained in the key paths array will trigger
                               the block when they are modified. See description above for more detail on linked properties.
    - parameter queue: The serial dispatch queue to receive notification on. If `nil`, notifications are delivered to the current thread.
 
-   - returns: `Observable<Element>`, e.g. when called on `Results<Model>` it will return `Observable<Results<Model>>`, on a `List<User>` it will return `Observable<List<User>>`, etc.
+   - returns: `RxObservable<Element>`, e.g. when called on `Results<Model>` it will return `RxObservable<Results<Model>>`, on a `List<User>` it will return `RxObservable<List<User>>`, etc.
    */
   static func collection(from collection: Element, synchronousStart: Bool = true, keyPaths: [String]? = nil, on queue: DispatchQueue? = nil)
-    -> Observable<Element> {
-    return Observable.create { observer in
+    -> RxObservable<Element> {
+    return RxObservable.create { observer in
       if synchronousStart {
         observer.onNext(collection)
       }
@@ -153,47 +153,47 @@ public extension ObservableType where Element: NotificationEmitter {
   }
 
   @available(*, deprecated, renamed: "array(from:synchronousStart:)")
-  static func arrayFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> Observable<[Element.ElementType]> {
+  static func arrayFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> RxObservable<[Element.ElementType]> {
     return array(from: collection)
   }
 
   /**
-   Returns an `Observable<Array<Element.Element>>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
+   Returns an `RxObservable<Array<Element.Element>>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
    The result emits an array containing all objects from the source collection.
 
    - parameter from: A Realm collection of type `Element`: either `Results`, `List`, `LinkingObjects` or `AnyRealmCollection`.
-   - parameter synchronousStart: whether the resulting Observable should emit its first element synchronously (e.g. better for UI bindings)
+   - parameter synchronousStart: whether the resulting RxObservable should emit its first element synchronously (e.g. better for UI bindings)
    - parameter queue: The serial dispatch queue to receive notification on. If `nil`, notifications are delivered to the current thread.
 
-   - returns: `Observable<Array<Element.Element>>`, e.g. when called on `Results<Model>` it will return `Observable<Array<Model>>`, on a `List<User>` it will return `Observable<Array<User>>`, etc.
+   - returns: `RxObservable<Array<Element.Element>>`, e.g. when called on `Results<Model>` it will return `RxObservable<Array<Model>>`, on a `List<User>` it will return `RxObservable<Array<User>>`, etc.
    */
   static func array(from collection: Element, synchronousStart: Bool = true, on queue: DispatchQueue? = nil)
-    -> Observable<[Element.ElementType]> {
-    return Observable.collection(from: collection, synchronousStart: synchronousStart, on: queue)
+    -> RxObservable<[Element.ElementType]> {
+    return RxObservable.collection(from: collection, synchronousStart: synchronousStart, on: queue)
       .map { $0.toArray() }
   }
 
   @available(*, deprecated, renamed: "changeset(from:synchronousStart:)")
-  static func changesetFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> Observable<(AnyRealmCollection<Element.ElementType>, RealmChangeset?)> {
+  static func changesetFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> RxObservable<(AnyRealmCollection<Element.ElementType>, RealmChangeset?)> {
     return changeset(from: collection)
   }
 
   /**
-   Returns an `Observable<(Element, RealmChangeset?)>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
+   Returns an `RxObservable<(Element, RealmChangeset?)>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
 
    When the observable emits for the first time (if the initial notification is not coalesced with an update) the second tuple value will be `nil`.
 
    Each following emit will include a `RealmChangeset` with the indexes inserted, deleted or modified.
 
    - parameter from: A Realm collection of type `Element`: either `Results`, `List`, `LinkingObjects` or `AnyRealmCollection`.
-   - parameter synchronousStart: whether the resulting Observable should emit its first element synchronously (e.g. better for UI bindings)
+   - parameter synchronousStart: whether the resulting RxObservable should emit its first element synchronously (e.g. better for UI bindings)
    - parameter queue: The serial dispatch queue to receive notification on. If `nil`, notifications are delivered to the current thread.
 
-   - returns: `Observable<(AnyRealmCollection<Element.Element>, RealmChangeset?)>`
+   - returns: `RxObservable<(AnyRealmCollection<Element.Element>, RealmChangeset?)>`
    */
   static func changeset(from collection: Element, synchronousStart: Bool = true, on queue: DispatchQueue? = nil)
-    -> Observable<(AnyRealmCollection<Element.ElementType>, RealmChangeset?)> {
-    return Observable.create { observer in
+    -> RxObservable<(AnyRealmCollection<Element.ElementType>, RealmChangeset?)> {
+    return RxObservable.create { observer in
       if synchronousStart {
         observer.onNext((collection.toAnyCollection(), nil))
       }
@@ -219,12 +219,12 @@ public extension ObservableType where Element: NotificationEmitter {
   }
 
   @available(*, deprecated, renamed: "arrayWithChangeset(from:synchronousStart:)")
-  static func changesetArrayFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> Observable<([Element.ElementType], RealmChangeset?)> {
+  static func changesetArrayFrom(_ collection: Element, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> RxObservable<([Element.ElementType], RealmChangeset?)> {
     return arrayWithChangeset(from: collection)
   }
 
   /**
-   Returns an `Observable<(Array<Element.Element>, RealmChangeset?)>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
+   Returns an `RxObservable<(Array<Element.Element>, RealmChangeset?)>` that emits each time the collection data changes. The observable emits an initial value upon subscription.
 
    This method emits an `Array` containing all the realm collection objects, this means they all live in the memory. If you're using this method to observe large collections you might hit memory warnings.
 
@@ -233,28 +233,28 @@ public extension ObservableType where Element: NotificationEmitter {
    Each following emit will include a `RealmChangeset` with the indexes inserted, deleted or modified.
 
    - parameter from: A Realm collection of type `Element`: either `Results`, `List`, `LinkingObjects` or `AnyRealmCollection`.
-   - parameter synchronousStart: whether the resulting Observable should emit its first element synchronously (e.g. better for UI bindings)
+   - parameter synchronousStart: whether the resulting RxObservable should emit its first element synchronously (e.g. better for UI bindings)
    - parameter queue: The serial dispatch queue to receive notification on. If `nil`, notifications are delivered to the current thread.
 
-   - returns: `Observable<(Array<Element.Element>, RealmChangeset?)>`
+   - returns: `RxObservable<(Array<Element.Element>, RealmChangeset?)>`
    */
   static func arrayWithChangeset(from collection: Element, synchronousStart: Bool = true, on queue: DispatchQueue? = nil)
-    -> Observable<([Element.ElementType], RealmChangeset?)> {
-    return Observable.changeset(from: collection, on: queue)
+    -> RxObservable<([Element.ElementType], RealmChangeset?)> {
+    return RxObservable.changeset(from: collection, on: queue)
       .map { ($0.toArray(), $1) }
   }
 }
 
-public extension Observable {
+public extension RxObservable {
   @available(*, deprecated, renamed: "from(realm:)")
-  static func from(_ realm: Realm, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> Observable<(Realm, Realm.Notification)> {
+  static func from(_ realm: Realm, scheduler: ImmediateSchedulerType = CurrentThreadScheduler.instance) -> RxObservable<(Realm, Realm.Notification)> {
     return from(realm: realm)
   }
 
   /**
-   Returns an `Observable<(Realm, Realm.Notification)>` that emits each time the Realm emits a notification.
+   Returns an `RxObservable<(Realm, Realm.Notification)>` that emits each time the Realm emits a notification.
 
-   The Observable you will get emits a tuple made out of:
+   The RxObservable you will get emits a tuple made out of:
 
    * the realm that emitted the event
    * the notification type: this can be either `.didChange` which occurs after a refresh or a write transaction ends,
@@ -263,10 +263,10 @@ public extension Observable {
    For more information look up: [Realm.Notification](https://realm.io/docs/swift/latest/api/Enums/Notification.html)
 
    - parameter realm: A Realm instance
-   - returns: `Observable<(Realm, Realm.Notification)>`, which you can subscribe to
+   - returns: `RxObservable<(Realm, Realm.Notification)>`, which you can subscribe to
    */
-  static func from(realm: Realm) -> RxSwift.Observable<(Realm, Realm.Notification)> {
-    return RxSwift.Observable<(Realm, Realm.Notification)>.create { observer in
+  static func from(realm: Realm) -> RxSwift.RxObservable<(Realm, Realm.Notification)> {
+    return RxSwift.RxObservable<(Realm, Realm.Notification)>.create { observer in
       let token = realm.observe { (notification: Realm.Notification, realm: Realm) in
         observer.onNext((realm, notification))
       }
@@ -288,7 +288,7 @@ public extension Reactive where Base == Realm {
 
    - parameter: update - update according to Realm.UpdatePolicy
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<S>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<S>`, which you can use to subscribe an `RxObservable` to
    */
   func add<S: Sequence>(update: Realm.UpdatePolicy = .error, onError: ((S?, Error) -> Void)? = nil)
     -> AnyObserver<S> where S.Iterator.Element: Object {
@@ -314,7 +314,7 @@ public extension Reactive where Base == Realm {
 
    - parameter: update - update according to Realm.UpdatePolicy
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<O>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<O>`, which you can use to subscribe an `RxObservable` to
    */
   func add<O: Object>(update: Realm.UpdatePolicy = .error,
                       onError: ((O?, Error) -> Void)? = nil) -> AnyObserver<O> {
@@ -338,7 +338,7 @@ public extension Reactive where Base == Realm {
    Returns bindable sink wich deletes objects in sequence from Realm.
 
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<S>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<S>`, which you can use to subscribe an `RxObservable` to
    */
   func delete<S: Sequence>(onError: ((S?, Error) -> Void)? = nil)
     -> AnyObserver<S> where S.Iterator.Element: Object {
@@ -362,7 +362,7 @@ public extension Reactive where Base == Realm {
    Returns bindable sink wich deletes objects in sequence from Realm.
 
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<O>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<O>`, which you can use to subscribe an `RxObservable` to
    */
   func delete<O: Object>(onError: ((O?, Error) -> Void)? = nil) -> AnyObserver<O> {
     return RealmObserver(realm: base, binding: { realm, element, error in
@@ -390,7 +390,7 @@ public extension Reactive where Base == Realm {
    to use to get a Realm for the write operations
    - parameter: update - update according to Realm.UpdatePolicy
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<S>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<S>`, which you can use to subscribe an `RxObservable` to
    */
   static func add<S: Sequence>(configuration: Realm.Configuration = Realm.Configuration.defaultConfiguration,
                                update: Realm.UpdatePolicy = .error,
@@ -418,7 +418,7 @@ public extension Reactive where Base == Realm {
    to use to get a Realm for the write operations
    - parameter: update - update according to Realm.UpdatePolicy
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<O>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<O>`, which you can use to subscribe an `RxObservable` to
    */
   static func add<O: Object>(configuration: Realm.Configuration = Realm.Configuration.defaultConfiguration,
                              update: Realm.UpdatePolicy = .error,
@@ -443,7 +443,7 @@ public extension Reactive where Base == Realm {
    Returns bindable sink, which deletes objects in sequence from Realm.
 
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<S>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<S>`, which you can use to subscribe an `RxObservable` to
    */
   static func delete<S: Sequence>(onError: ((S?, Error) -> Void)? = nil)
     -> AnyObserver<S> where S.Iterator.Element: Object {
@@ -472,7 +472,7 @@ public extension Reactive where Base == Realm {
    Returns bindable sink, which deletes object from Realm
 
    - parameter: onError - closure to implement custom error handling
-   - returns: `AnyObserver<O>`, which you can use to subscribe an `Observable` to
+   - returns: `AnyObserver<O>`, which you can use to subscribe an `RxObservable` to
    */
   static func delete<O: Object>(onError: ((O?, Error) -> Void)? = nil) -> AnyObserver<O> {
     return AnyObserver { event in
@@ -495,24 +495,24 @@ public extension Reactive where Base == Realm {
 
 // MARK: Realm Object type extensions
 
-public extension Observable where Element: Object {
+public extension RxObservable where Element: Object {
   @available(*, deprecated, renamed: "from(object:)")
-  static func from(_ object: Element) -> Observable<Element> {
+  static func from(_ object: Element) -> RxObservable<Element> {
     return from(object: object)
   }
 
   /**
-   Returns an `Observable<Object>` that emits each time the object changes. The observable emits an initial value upon subscription.
+   Returns an `RxObservable<Object>` that emits each time the object changes. The observable emits an initial value upon subscription.
 
    - parameter object: A Realm Object to observe
-   - parameter emitInitialValue: whether the resulting `Observable` should emit its first element synchronously (e.g. better for UI bindings)
+   - parameter emitInitialValue: whether the resulting `RxObservable` should emit its first element synchronously (e.g. better for UI bindings)
    - parameter properties: changes to which properties would triger emitting a .next event
-   - returns: `Observable<Object>` will emit any time the observed object changes + one initial emit upon subscription
+   - returns: `RxObservable<Object>` will emit any time the observed object changes + one initial emit upon subscription
    */
 
   static func from(object: Element, emitInitialValue: Bool = true,
-                   properties: [String]? = nil) -> Observable<Element> {
-    return RxSwift.Observable<Element>.create { observer in
+                   properties: [String]? = nil) -> RxObservable<Element> {
+    return RxSwift.RxObservable<Element>.create { observer in
       if emitInitialValue {
         observer.onNext(object)
       }
@@ -539,14 +539,14 @@ public extension Observable where Element: Object {
   }
 
   /**
-   Returns an `Observable<PropertyChange>` that emits the object `PropertyChange`s.
+   Returns an `RxObservable<PropertyChange>` that emits the object `PropertyChange`s.
 
    - parameter object: A Realm Object to observe
-   - returns: `Observable<PropertyChange>` will emit any time a change is detected on the object
+   - returns: `RxObservable<PropertyChange>` will emit any time a change is detected on the object
    */
 
-  static func propertyChanges(object: Element) -> Observable<PropertyChange> {
-    return RxSwift.Observable<PropertyChange>.create { observer in
+  static func propertyChanges(object: Element) -> RxObservable<PropertyChange> {
+    return RxSwift.RxObservable<PropertyChange>.create { observer in
       let token = object.observe { change in
         switch change {
         case let .change(_, changes):
